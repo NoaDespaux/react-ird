@@ -4,6 +4,7 @@ import { MapContainer, TileLayer, Rectangle, useMapEvent, useMapEvents, useMap, 
 import ReactBootstrap from 'react-bootstrap';
 import Form from 'react-bootstrap/Form';
 import { Overlay } from 'react-bootstrap';
+import DateSlider from './DateSlider';
 
 export default function TemporalAndSpatialFilters() {
 
@@ -54,13 +55,12 @@ export default function TemporalAndSpatialFilters() {
     const refDateMin = useRef<typeof ReactBootstrap.Form>(null)
     const refDateMax = useRef<typeof ReactBootstrap.Form>(null)
 
-    function handleDateMin(date: number) {
-        setDateMin(date)
-        filterData(new Date(date), new Date(dateMax))
-    }
-    function handleDateMax(date: number) {
-        setDateMax(date)
-        filterData(new Date(dateMin), new Date(date))
+    function handleDates(dateMinInput: number, dateMaxInput: number) {
+        if (dateMin !== dateMinInput || dateMax !== dateMaxInput) {
+            setDateMin(dateMinInput)
+            setDateMax(dateMaxInput)
+            filterData(new Date(dateMin), new Date(dateMax))
+        }
     }
 
     function filterData(dateMin: Date, dateMax: Date) {
@@ -188,54 +188,11 @@ export default function TemporalAndSpatialFilters() {
                     <textarea placeholder='Longitude Max' onChange={(e) => handleLngMax(parseFloat(e.target.value) || 2)}/> Current: {lngMax}
                 </div>
             </form>
-            <Form >
-                <Form.Group>
-                    <Form.Label>Date Min</Form.Label>
-                    <Form.Range ref={refDateMin} min={-631152000000} max={1735689600000} value={dateMin} onChange={e => handleDateMin(parseInt(e.target.value))}/>
-                    <Overlay target={refDateMin.current} show={true} placement="right">
-                        {({
-                            placement: _placement,
-                            arrowProps: _arrowProps,
-                            show: _show,
-                            popper: _popper,
-                            hasDoneInitialMeasure: _hasDoneInitialMeasure,
-                            ...props
-                        }) => (
-                        <div
-                            {...props}
-                            style={{
-                            ...props.style,
-                            }}
-                        >
-                            {new Date(dateMin).toDateString()}
-                        </div>
-                        )}
-                    </Overlay>
-                </Form.Group>
-                <Form.Group>
-                    <Form.Label>Date Max</Form.Label>
-                    <Form.Range ref={refDateMax} min={-631152000000} max={1735689600000} value={dateMax} onChange={e => handleDateMax(parseInt(e.target.value))}/>
-                    <Overlay target={refDateMax.current} show={true} placement="right">
-                        {({
-                            placement: _placement,
-                            arrowProps: _arrowProps,
-                            show: _show,
-                            popper: _popper,
-                            hasDoneInitialMeasure: _hasDoneInitialMeasure,
-                            ...props
-                        }) => (
-                        <div
-                            {...props}
-                            style={{
-                            ...props.style,
-                        }}
-                        >
-                            {new Date(dateMax).toDateString()}
-                        </div>
-                        )}
-                    </Overlay>
-                </Form.Group>
-            </Form>
+            <DateSlider 
+                min={-631152000000}
+                max={1735689600000}
+                onChange={({ min, max }) => handleDates(min, max)}
+            />
             <MapContainer className="temporalMap" center={[49, 4]} zoom={6} scrollWheelZoom={true}>
                 <TileLayer
                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
