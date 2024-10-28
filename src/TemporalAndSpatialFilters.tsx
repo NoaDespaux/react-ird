@@ -190,7 +190,7 @@ export default function TemporalAndSpatialFilters() {
             </form>
             <DateSlider 
                 min={-631152000000}
-                max={1735689600000}
+                max={Date.now()}
                 onChange={({ min, max }) => handleDates(min, max)}
             />
             <MapContainer className="temporalMap" center={[49, 4]} zoom={6} scrollWheelZoom={true}>
