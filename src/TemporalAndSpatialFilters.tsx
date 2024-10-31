@@ -1,10 +1,11 @@
 import Leaflet from 'leaflet';
 import React, { SetStateAction, useEffect, useRef, useState } from "react";
 import { MapContainer, TileLayer, Rectangle, useMapEvent, useMapEvents, useMap, Polygon, Tooltip } from "react-leaflet";
-import ReactBootstrap from 'react-bootstrap';
+import { Button } from 'react-bootstrap';
 import Form from 'react-bootstrap/Form';
-import { Overlay } from 'react-bootstrap';
-import DateSlider from './DateSlider';
+import MiniMap from './MiniMap';
+import { DatePicker } from 'rsuite';
+import 'rsuite/dist/rsuite.min.css';
 
 export default function TemporalAndSpatialFilters() {
 
@@ -51,16 +52,15 @@ export default function TemporalAndSpatialFilters() {
     const [dateMax, setDateMax] = useState<number>(0)
 
     const [options, setOptions] = useState(dataTime1.options)
-    
-    const refDateMin = useRef<typeof ReactBootstrap.Form>(null)
-    const refDateMax = useRef<typeof ReactBootstrap.Form>(null)
 
-    function handleDates(dateMinInput: number, dateMaxInput: number) {
-        if (dateMin !== dateMinInput || dateMax !== dateMaxInput) {
-            setDateMin(dateMinInput)
-            setDateMax(dateMaxInput)
-            filterData(new Date(dateMin), new Date(dateMax))
-        }
+    function handleDateMin(dateMinInput: number) {
+        setDateMin(dateMinInput)
+        filterData(new Date(dateMinInput), new Date(dateMax))
+    }
+
+    function handleDateMax(dateMaxInput: number) {
+        setDateMax(dateMaxInput)
+        filterData(new Date(dateMin), new Date(dateMaxInput))
     }
 
     function filterData(dateMin: Date, dateMax: Date) {
@@ -80,101 +80,105 @@ export default function TemporalAndSpatialFilters() {
     const [lngMax, setLngMax] = useState<number>(2)
     const [lngMin, setLngMin] = useState<number>(4)
 
-        const polygon: [number, number][] = [
-            [42.99, 1],
-            [44, 1.4],
-            [43.3, 1.5]
-        ]
-    
-        const rectangle1: [number, number][] = [
-            [44, 0.5],
-            [43, 0.5],
-            [43, 1.1],
-            [44, 1.1]
-        ]
-    
-        const rectangle2: [number, number][] = [
-            [44.5, 1.3],
-            [43.8, 1.3],
-            [43.8, 2],
-            [44.5, 2]
-        ]
+    const polygon: [number, number][] = [
+        [42.99, 1],
+        [44, 1.4],
+        [43.3, 1.5]
+    ]
 
-        const polygonFilter: [number, number][] = [
-            [latMin, lngMax],
-            [latMax, lngMax],
-            [latMax, lngMin],
-            [latMin, lngMin]
-        ]
-    
-        var tooltipFilter: string = "This bounding box intersect:"
-    
-        const polygonRef = useRef<Leaflet.Polygon<any>>(null);
-        const rectangle1Ref = useRef<Leaflet.Polygon<any>>(null);
-        const rectangle2Ref = useRef<Leaflet.Polygon<any>>(null);
-        const filterRef = useRef<Leaflet.Polygon<any>>(null);
-    
-        const [update, setUpdate] = useState<Boolean>(false)
-        useEffect(() => {
-            if (update === false) {
-                setUpdate(true)
-            }
-        })
-        
-        function arePolygonIntersecting(poly1: Leaflet.Polygon, poly2: Leaflet.Polygon) {
-            return poly1.getBounds().intersects(poly2.getBounds())
-        }
-        
-        function checkIntersection() {
-            if (rectangle1Ref.current !== null && rectangle2Ref.current !== null && polygonRef.current !== null && filterRef.current !== null) {
-                if (arePolygonIntersecting(rectangle1Ref.current, filterRef.current)) {
-                    tooltipFilter += " rectangle1"
-                }
-                if (arePolygonIntersecting(rectangle2Ref.current, filterRef.current)) {
-                    tooltipFilter += " rectangle2"
-                }
-                if (arePolygonIntersecting(polygonRef.current, filterRef.current)) {
-                    tooltipFilter += " polygon"
-                }
-            }
-        }
-        checkIntersection()
+    const rectangle1: [number, number][] = [
+        [44, 0.5],
+        [43, 0.5],
+        [43, 1.1],
+        [44, 1.1]
+    ]
 
-        function handleLatMin(value: number) {
-            setLatMin(value);
-            checkIntersection();
-            setUpdate(false)
-        }
-        function handleLatMax(value: number) {
-            setLatMax(value);
-            checkIntersection();
-            setUpdate(false)
-        }
-        function handleLngMin(value: number) {
-            setLngMin(value);
-            checkIntersection();
-            setUpdate(false)
-        }
-        function handleLngMax(value: number) {
-            setLngMax(value);
-            checkIntersection();
-            setUpdate(false)
-        }
+    const rectangle2: [number, number][] = [
+        [44.5, 1.3],
+        [43.8, 1.3],
+        [43.8, 2],
+        [44.5, 2]
+    ]
 
-        function isPointInsidePolygon(point: [number, number], poly: [number, number][]) {
-            var inside = false;
-            for (var i = 0, j = poly.length - 1; i < poly.length; j = i++) {
-                var xi = poly[i][0], yi = poly[i][1];
-                var xj = poly[j][0], yj = poly[j][1];
-                
-                var intersect = ((yi > point[1]) != (yj > point[1]))
-                && (point[0] < (xj - xi) * (point[1] - yi) / (yj - yi) + xi);
-                if (intersect) inside = !inside;
+    const polygonFilter: [number, number][] = [
+        [latMin, lngMax],
+        [latMax, lngMax],
+        [latMax, lngMin],
+        [latMin, lngMin]
+    ]
+
+    var tooltipFilter: string = "This bounding box intersect:"
+
+    const polygonRef = useRef<Leaflet.Polygon<any>>(null);
+    const rectangle1Ref = useRef<Leaflet.Polygon<any>>(null);
+    const rectangle2Ref = useRef<Leaflet.Polygon<any>>(null);
+    const filterRef = useRef<Leaflet.Polygon<any>>(null);
+
+    const [update, setUpdate] = useState<Boolean>(false)
+    useEffect(() => {
+        if (update === false) {
+            setUpdate(true)
+        }
+    })
+    
+    function arePolygonIntersecting(poly1: Leaflet.Polygon, poly2: Leaflet.Polygon) {
+        return poly1.getBounds().intersects(poly2.getBounds())
+    }
+    
+    function checkIntersection() {
+        if (rectangle1Ref.current !== null && rectangle2Ref.current !== null && polygonRef.current !== null && filterRef.current !== null) {
+            if (arePolygonIntersecting(rectangle1Ref.current, filterRef.current)) {
+                tooltipFilter += " rectangle1"
             }
+            if (arePolygonIntersecting(rectangle2Ref.current, filterRef.current)) {
+                tooltipFilter += " rectangle2"
+            }
+            if (arePolygonIntersecting(polygonRef.current, filterRef.current)) {
+                tooltipFilter += " polygon"
+            }
+        }
+    }
+    checkIntersection()
+
+    function handleLatMin(value: number) {
+        setLatMin(value);
+        checkIntersection();
+        setUpdate(false)
+    }
+    function handleLatMax(value: number) {
+        setLatMax(value);
+        checkIntersection();
+        setUpdate(false)
+    }
+    function handleLngMin(value: number) {
+        setLngMin(value);
+        checkIntersection();
+        setUpdate(false)
+    }
+    function handleLngMax(value: number) {
+        setLngMax(value);
+        checkIntersection();
+        setUpdate(false)
+    }
+
+    function isPointInsidePolygon(point: [number, number], poly: [number, number][]) {
+        var inside = false;
+        for (var i = 0, j = poly.length - 1; i < poly.length; j = i++) {
+            var xi = poly[i][0], yi = poly[i][1];
+            var xj = poly[j][0], yj = poly[j][1];
             
-            return inside;
-        };
+            var intersect = ((yi > point[1]) != (yj > point[1]))
+            && (point[0] < (xj - xi) * (point[1] - yi) / (yj - yi) + xi);
+            if (intersect) inside = !inside;
+        }
+        
+        return inside;
+    };
     
+    const latMinRef= useRef<HTMLInputElement>(null)
+    const latMaxRef= useRef<HTMLInputElement>(null)
+    const lngMinRef= useRef<HTMLInputElement>(null)
+    const lngMaxRef= useRef<HTMLInputElement>(null)
     
     return(
         <div>
@@ -188,11 +192,30 @@ export default function TemporalAndSpatialFilters() {
                     <textarea placeholder='Longitude Max' onChange={(e) => handleLngMax(parseFloat(e.target.value) || 2)}/> Current: {lngMax}
                 </div>
             </form>
-            <DateSlider 
-                min={-631152000000}
-                max={Date.now()}
-                onChange={({ min, max }) => handleDates(min, max)}
-            />
+            <DatePicker format='dd/MM/yyyy' placeholder="Start date" editable={true} onChange={((e) => {
+                if (e !== null) {
+                    handleDateMin(e.getTime())
+                }
+            })}/>
+            <DatePicker format='dd/MM/yyyy' placeholder="End date" editable={true} onChange={((e) => {
+                if (e !== null) {
+                    handleDateMax(e.getTime())
+                }
+            })}/>
+            <Form>
+                <Form.Group controlId='formMiniMap'>
+                    <Form.Control type='text' placeholder='Lat Min (haut)' ref={latMinRef}/>
+                </Form.Group>    
+                <Form.Group>
+                    <Form.Control type='text' placeholder='Lat Max (bas)' ref={latMaxRef}/>
+                </Form.Group>
+                <Form.Group>
+                    <Form.Control type='text' placeholder='Lng Min (gauche)' ref={lngMinRef}/>
+                </Form.Group>
+                <Form.Group>
+                    <Form.Control type='text' placeholder='Lng Max (droite)' ref={lngMaxRef}/>
+                </Form.Group>
+            </Form>
             <MapContainer className="temporalMap" center={[49, 4]} zoom={6} scrollWheelZoom={true}>
                 <TileLayer
                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
