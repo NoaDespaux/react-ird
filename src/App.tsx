@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import Board from './Board.tsx';
 import React from 'react';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 export default function Game() {
   const [history, setHistory] = useState<Array<Array<string>>>([Array(9).fill(null)]);
