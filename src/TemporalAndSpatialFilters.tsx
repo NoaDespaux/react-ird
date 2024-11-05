@@ -1,8 +1,6 @@
-import Leaflet from 'leaflet';
-import React, { SetStateAction, useEffect, useRef, useState } from "react";
-import { MapContainer, TileLayer, Rectangle, useMapEvent, useMapEvents, useMap, Polygon, Tooltip } from "react-leaflet";
-import { Button } from 'react-bootstrap';
-import Form from 'react-bootstrap/Form';
+import Leaflet, { Map } from 'leaflet';
+import React, { useEffect, useRef, useState } from "react";
+import { MapContainer, TileLayer, Polygon, Tooltip } from "react-leaflet";
 import MiniMap from './MiniMap';
 import { DatePicker } from 'rsuite';
 import 'rsuite/dist/rsuite.min.css';
@@ -174,11 +172,69 @@ export default function TemporalAndSpatialFilters() {
         
         return inside;
     };
+
+    const thisMapRef = useRef<Map>(null)
+    const BASE_SOUTH = "42"
+    const BASE_NORTH = "54"
+    const BASE_WEST = "-11"
+    const BASE_EAST = "19"
     
-    const latMinRef= useRef<HTMLInputElement>(null)
-    const latMaxRef= useRef<HTMLInputElement>(null)
-    const lngMinRef= useRef<HTMLInputElement>(null)
-    const lngMaxRef= useRef<HTMLInputElement>(null)
+    const [latMinMiniMap, setLatMinMiniMap] = useState<number>(42)
+    const [latMaxMiniMap, setLatMaxMiniMap] = useState<number>(54)
+    const [lngMinMiniMap, setLngMinMiniMap] = useState<number>(-11)
+    const [lngMaxMiniMap, setLngMaxMiniMap] = useState<number>(19)
+
+    function handleLatMinMiniMap(latMin: string) {
+        if(thisMapRef.current !== null) {
+            if (latMin === "" || latMin === "-") {
+                latMin = BASE_SOUTH
+            }
+            setLatMinMiniMap(parseFloat(latMin))
+            thisMapRef.current.fitBounds(new Leaflet.LatLngBounds(
+                new Leaflet.LatLng(latMaxMiniMap, lngMaxMiniMap),
+                new Leaflet.LatLng(parseFloat(latMin), lngMinMiniMap)
+            ))
+        }
+    }
+
+    function handleLatMaxMiniMap(latMax: string) {
+        if(thisMapRef.current !== null) {
+            if (latMax === "" || latMax === "-") {
+                latMax = BASE_NORTH
+            }
+            setLatMaxMiniMap(parseFloat(latMax))
+            thisMapRef.current.fitBounds(new Leaflet.LatLngBounds(
+                new Leaflet.LatLng(parseFloat(latMax), lngMaxMiniMap),
+                new Leaflet.LatLng(latMinMiniMap, lngMinMiniMap)
+            ))
+        }
+    }
+
+    function handleLngMinMiniMap(lngMin: string) {
+        if(thisMapRef.current !== null) {
+            if (lngMin === "" || lngMin === "-") {
+                lngMin = BASE_WEST
+            }
+            setLngMinMiniMap(parseFloat(lngMin))
+            thisMapRef.current.fitBounds(new Leaflet.LatLngBounds(
+                new Leaflet.LatLng(latMinMiniMap, lngMaxMiniMap),
+                new Leaflet.LatLng(latMaxMiniMap, parseFloat(lngMin))
+            ))
+        }
+    }
+
+    function handleLngMaxMiniMap(lngMax: string) {
+        if(thisMapRef.current !== null) {
+            if (lngMax === "" || lngMax === "-") {
+                lngMax = BASE_EAST
+            }
+            setLngMaxMiniMap(parseFloat(lngMax))
+            thisMapRef.current.fitBounds(new Leaflet.LatLngBounds(
+                new Leaflet.LatLng(latMinMiniMap, parseFloat(lngMax)),
+                new Leaflet.LatLng(latMaxMiniMap, lngMinMiniMap)
+            ))
+        }
+    }
     
     return(
         <div>
@@ -202,21 +258,7 @@ export default function TemporalAndSpatialFilters() {
                     handleDateMax(e.getTime())
                 }
             })}/>
-            <Form>
-                <Form.Group controlId='formMiniMap'>
-                    <Form.Control type='text' placeholder='Lat Min (haut)' ref={latMinRef}/>
-                </Form.Group>    
-                <Form.Group>
-                    <Form.Control type='text' placeholder='Lat Max (bas)' ref={latMaxRef}/>
-                </Form.Group>
-                <Form.Group>
-                    <Form.Control type='text' placeholder='Lng Min (gauche)' ref={lngMinRef}/>
-                </Form.Group>
-                <Form.Group>
-                    <Form.Control type='text' placeholder='Lng Max (droite)' ref={lngMaxRef}/>
-                </Form.Group>
-            </Form>
-            <MapContainer className="temporalMap" center={[49, 4]} zoom={6} scrollWheelZoom={true}>
+            <MapContainer className="temporalMap" center={[49, 4]} zoom={6} scrollWheelZoom={true} ref={thisMapRef}>
                 <TileLayer
                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -231,6 +273,13 @@ export default function TemporalAndSpatialFilters() {
                     </Tooltip>
                 </Polygon>
             </MapContainer>
+            <MiniMap
+                parent={thisMapRef}
+                handleLatMinMiniMap={(e: string) => handleLatMinMiniMap(e)}
+                handleLatMaxMiniMap={(e: string) => handleLatMaxMiniMap(e)}
+                handleLngMinMiniMap={(e: string) => handleLngMinMiniMap(e)}
+                handleLngMaxMiniMap={(e: string) => handleLngMaxMiniMap(e)}
+                />
         </div>
     )
 }
