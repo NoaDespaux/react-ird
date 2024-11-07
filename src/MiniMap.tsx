@@ -23,6 +23,11 @@ interface MiniMapProps {
 
 export default function MiniMap({parent, handleLatMinMiniMap, handleLatMaxMiniMap, handleLngMinMiniMap, handleLngMaxMiniMap}: MiniMapProps) {
     const BOUNDS_STYLE = { weight: 1 }
+
+    const [latMin, setLatMin] = useState<number>(0)
+    const [latMax, setLatMax] = useState<number>(0)
+    const [lngMin, setLngMin] = useState<number>(0)
+    const [lngMax, setLngMax] = useState<number>(0)
       
     function MinimapBounds({ parentMap, zoom }: MinimapBoundsProps) {
         const minimap = useMap()
@@ -35,6 +40,11 @@ export default function MiniMap({parent, handleLatMinMiniMap, handleLatMaxMiniMa
             [parentMap],
         )
         useMapEvent('click', onClick)
+        
+        setLatMin(parentMap.getBounds().getSouth())
+        setLatMax(parentMap.getBounds().getNorth())
+        setLngMin(parentMap.getBounds().getWest())
+        setLngMax(parentMap.getBounds().getEast())
       
         // Keep track of bounds in state to trigger renders
         const [bounds, setBounds] = useState(parentMap.getBounds())
@@ -61,7 +71,7 @@ export default function MiniMap({parent, handleLatMinMiniMap, handleLatMaxMiniMa
                 const minimap = useMemo(
                     () => (
                         <MapContainer
-                            style={{ height: 150, width: 150 }}
+                            style={{ height: 150, width: 200 }}
                             center={parentMap.getCenter()}
                             zoom={mapZoom}
                             dragging={false}
@@ -94,6 +104,7 @@ export default function MiniMap({parent, handleLatMinMiniMap, handleLatMaxMiniMa
                             <Form.Control type='text' placeholder='Lat Max' onChange={(e) => handleLatMaxMiniMap(e.target.value)}/>
                         </Form.Group>
                     </Form>
+                    <p>{latMax}</p>
                 </Col>
             </Row>
             <Row className="justify-content-md-center align-items-md-center">
@@ -103,6 +114,7 @@ export default function MiniMap({parent, handleLatMinMiniMap, handleLatMaxMiniMa
                             <Form.Control type='text' placeholder='Lng Min' onChange={(e) => handleLngMinMiniMap(e.target.value)}/>
                         </Form.Group>
                     </Form>
+                    <p>{lngMin}</p>
                 </Col>
                 <Col md="auto">
                     <MinimapControl zoom={1}/>
@@ -113,6 +125,7 @@ export default function MiniMap({parent, handleLatMinMiniMap, handleLatMaxMiniMa
                             <Form.Control type='text' placeholder='Lng Max' onChange={(e) => handleLngMaxMiniMap(e.target.value)}/>
                         </Form.Group>
                     </Form>
+                    <p>{lngMax}</p>
                 </Col>
             </Row>
             <Row className="justify-content-md-center">
@@ -122,6 +135,7 @@ export default function MiniMap({parent, handleLatMinMiniMap, handleLatMaxMiniMa
                             <Form.Control type='text' placeholder='Lat Min' onChange={(e) => handleLatMinMiniMap(e.target.value)}/>
                         </Form.Group>
                     </Form>
+                    <p>{latMin}</p>
                 </Col>
             </Row>
         </Container>

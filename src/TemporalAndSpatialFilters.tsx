@@ -258,28 +258,30 @@ export default function TemporalAndSpatialFilters() {
                     handleDateMax(e.getTime())
                 }
             })}/>
-            <MapContainer className="temporalMap" center={[49, 4]} zoom={6} scrollWheelZoom={true} ref={thisMapRef}>
-                <TileLayer
-                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            <div className='wrapperMap'>
+                <MapContainer className="temporalMap" center={[49, 4]} zoom={6} scrollWheelZoom={true} ref={thisMapRef}>
+                    <TileLayer
+                        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                        />
+                    <Polygon positions={temporalPositions} pathOptions={options}/>
+                    <Polygon positions={polygon} ref={polygonRef}/>
+                    <Polygon positions={rectangle1} ref={rectangle1Ref}/>
+                    <Polygon positions={rectangle2} ref={rectangle2Ref}/>
+                    <Polygon positions={polygonFilter} ref={filterRef} pathOptions={{color: "red"}}>
+                        <Tooltip direction="right" permanent>
+                            {tooltipFilter}
+                        </Tooltip>
+                    </Polygon>
+                </MapContainer>
+                <MiniMap
+                    parent={thisMapRef}
+                    handleLatMinMiniMap={(e: string) => handleLatMinMiniMap(e)}
+                    handleLatMaxMiniMap={(e: string) => handleLatMaxMiniMap(e)}
+                    handleLngMinMiniMap={(e: string) => handleLngMinMiniMap(e)}
+                    handleLngMaxMiniMap={(e: string) => handleLngMaxMiniMap(e)}
                     />
-                <Polygon positions={temporalPositions} pathOptions={options}/>
-                <Polygon positions={polygon} ref={polygonRef}/>
-                <Polygon positions={rectangle1} ref={rectangle1Ref}/>
-                <Polygon positions={rectangle2} ref={rectangle2Ref}/>
-                <Polygon positions={polygonFilter} ref={filterRef} pathOptions={{color: "red"}}>
-                    <Tooltip direction="right" permanent>
-                        {tooltipFilter}
-                    </Tooltip>
-                </Polygon>
-            </MapContainer>
-            <MiniMap
-                parent={thisMapRef}
-                handleLatMinMiniMap={(e: string) => handleLatMinMiniMap(e)}
-                handleLatMaxMiniMap={(e: string) => handleLatMaxMiniMap(e)}
-                handleLngMinMiniMap={(e: string) => handleLngMinMiniMap(e)}
-                handleLngMaxMiniMap={(e: string) => handleLngMaxMiniMap(e)}
-                />
+            </div>
         </div>
     )
 }

@@ -95,5 +95,10 @@ body {
 
 .temporalMap {
   height: 800px;
+  width: 3000px;
   z-index: 3;
+}
+
+.wrapperMap {
+  display: flex;
 }
