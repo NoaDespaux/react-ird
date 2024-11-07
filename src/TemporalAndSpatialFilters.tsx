@@ -73,10 +73,10 @@ export default function TemporalAndSpatialFilters() {
 
     ////////// SPATIAL FILTER //////////
     
-    const [latMax, setLatMax] = useState<number>(45)
-    const [latMin, setLatMin] = useState<number>(46)
-    const [lngMax, setLngMax] = useState<number>(2)
-    const [lngMin, setLngMin] = useState<number>(4)
+    const latMaxFilter: number = 46
+    const latMinFilter: number = 45
+    const lngMinFilter: number = 1
+    const lngMaxFilter: number = 4
 
     const polygon: [number, number][] = [
         [42.99, 1],
@@ -99,10 +99,10 @@ export default function TemporalAndSpatialFilters() {
     ]
 
     const polygonFilter: [number, number][] = [
-        [latMin, lngMax],
-        [latMax, lngMax],
-        [latMax, lngMin],
-        [latMin, lngMin]
+        [latMinFilter, lngMaxFilter],
+        [latMaxFilter, lngMaxFilter],
+        [latMaxFilter, lngMinFilter],
+        [latMinFilter, lngMinFilter]
     ]
 
     var tooltipFilter: string = "This bounding box intersect:"
@@ -137,27 +137,6 @@ export default function TemporalAndSpatialFilters() {
         }
     }
     checkIntersection()
-
-    function handleLatMin(value: number) {
-        setLatMin(value);
-        checkIntersection();
-        setUpdate(false)
-    }
-    function handleLatMax(value: number) {
-        setLatMax(value);
-        checkIntersection();
-        setUpdate(false)
-    }
-    function handleLngMin(value: number) {
-        setLngMin(value);
-        checkIntersection();
-        setUpdate(false)
-    }
-    function handleLngMax(value: number) {
-        setLngMax(value);
-        checkIntersection();
-        setUpdate(false)
-    }
 
     function isPointInsidePolygon(point: [number, number], poly: [number, number][]) {
         var inside = false;
@@ -238,16 +217,7 @@ export default function TemporalAndSpatialFilters() {
     
     return(
         <div>
-            <form>
-                <div>
-                    <textarea placeholder='Latitude Min' onChange={(e) => handleLatMin(parseFloat(e.target.value) || 46)}/> Current: {latMin}
-                    <textarea placeholder='Latitude Max' onChange={(e) => handleLatMax(parseFloat(e.target.value) || 45)}/> Current: {latMax}
-                </div>
-                <div>
-                    <textarea placeholder='Longitude Min' onChange={(e) => handleLngMin(parseFloat(e.target.value) || 4)}/> Current: {lngMin}
-                    <textarea placeholder='Longitude Max' onChange={(e) => handleLngMax(parseFloat(e.target.value) || 2)}/> Current: {lngMax}
-                </div>
-            </form>
+            <h2>Projet d'apprentissage React / Leaflet</h2>
             <DatePicker format='dd/MM/yyyy' placeholder="Start date" editable={true} onChange={((e) => {
                 if (e !== null) {
                     handleDateMin(e.getTime())
