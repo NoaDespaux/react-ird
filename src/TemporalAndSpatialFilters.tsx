@@ -218,16 +218,6 @@ export default function TemporalAndSpatialFilters() {
     return(
         <div>
             <h2>Projet d'apprentissage React / Leaflet</h2>
-            <DatePicker format='dd/MM/yyyy' placeholder="Start date" editable={true} onChange={((e) => {
-                if (e !== null) {
-                    handleDateMin(e.getTime())
-                }
-            })}/>
-            <DatePicker format='dd/MM/yyyy' placeholder="End date" editable={true} onChange={((e) => {
-                if (e !== null) {
-                    handleDateMax(e.getTime())
-                }
-            })}/>
             <div className='wrapperMap'>
                 <MapContainer className="temporalMap" center={[49, 4]} zoom={6} scrollWheelZoom={true} ref={thisMapRef}>
                     <TileLayer
@@ -244,13 +234,27 @@ export default function TemporalAndSpatialFilters() {
                         </Tooltip>
                     </Polygon>
                 </MapContainer>
-                <MiniMap
-                    parent={thisMapRef}
-                    handleLatMinMiniMap={(e: string) => handleLatMinMiniMap(e)}
-                    handleLatMaxMiniMap={(e: string) => handleLatMaxMiniMap(e)}
-                    handleLngMinMiniMap={(e: string) => handleLngMinMiniMap(e)}
-                    handleLngMaxMiniMap={(e: string) => handleLngMaxMiniMap(e)}
-                    />
+                <div className='wrapperFilters'>
+                    <div className='wrapperDate'>
+                        <DatePicker format='dd/MM/yyyy' placeholder="Start date" editable={true} onChange={((e) => {
+                            if (e !== null) {
+                                handleDateMin(e.getTime())
+                            }
+                        })}/>
+                        <DatePicker format='dd/MM/yyyy' placeholder="End date" editable={true} onChange={((e) => {
+                            if (e !== null) {
+                                handleDateMax(e.getTime())
+                            }
+                        })}/>
+                    </div>
+                    <MiniMap
+                        parent={thisMapRef}
+                        handleLatMinMiniMap={(e: string) => handleLatMinMiniMap(e)}
+                        handleLatMaxMiniMap={(e: string) => handleLatMaxMiniMap(e)}
+                        handleLngMinMiniMap={(e: string) => handleLngMinMiniMap(e)}
+                        handleLngMaxMiniMap={(e: string) => handleLngMaxMiniMap(e)}
+                        />
+                </div>
             </div>
         </div>
     )

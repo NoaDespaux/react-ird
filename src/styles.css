@@ -94,11 +94,22 @@ body {
 }
 
 .temporalMap {
-  height: 800px;
-  width: 3000px;
+  height: 850px;
+  width: 80%;
   z-index: 3;
 }
 
 .wrapperMap {
   display: flex;
+}
+
+.wrapperFilters {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+}
+
+.wrapperDate {
+  display: flex;
+  flex-direction: column;
 }
